@@ -1,94 +1,58 @@
 import 'package:flutter/material.dart';
-
-void main() {
-  runApp(const ChosenPage());
-}
-
-class ChosenPage extends StatelessWidget 
-{
-  const ChosenPage({super.key});
+import 'package:flutter_svg/flutter_svg.dart';
+import 'view.dart';
+class ChooseLocationScreen extends StatefulWidget {
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Ekran vibora',
-      theme: ThemeData(
-        //TextField:  TextStyle(color: Colors.black, fontSize: 20),
-        scaffoldBackgroundColor: const Color.fromARGB(240, 175, 175, 175),
-        appBarTheme: const AppBarTheme(
-          backgroundColor: Colors.grey, // Set the AppBar background color to grey
-        ),
-      ),
-      home: const MyHomePage(title: 'Выбрать положение'),
-    );
-  }
+  _ChooseLocationScreenState createState() => _ChooseLocationScreenState();
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
+class _ChooseLocationScreenState extends State<ChooseLocationScreen> {
   final TextEditingController floorController = TextEditingController();
   final TextEditingController roomController = TextEditingController();
-  final TextEditingController descriptionController = TextEditingController();
+  Location? selectedLocation;
   String selectedItem = "Стол";
 
-  // A map to hold visibility states for numbers for each item
-  Map<String, bool> _visibilityStates = {
-    'Этаж:': false,
-    'Помещение:': false,
-    'Шкаф:': false,
-  };
-
   @override
-  Widget build(BuildContext context)
-   {
-    return Scaffold
-    (
-      appBar: AppBar
-      (
-        title: Align
-        (
-          alignment: Alignment.center,
-          child: Text(widget.title),
-        ),
-        leading: IconButton
-        (
-          icon: Icon(Icons.arrow_back),
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+
+        elevation: 0,
+        leading: IconButton(
+          icon: SvgPicture.asset('assets/icons/profile/back.svg', width: 32, height: 32),
           onPressed: () {
-            // Add your back navigation here
+            Navigator.pop(context);
           },
         ),
+        title: Text("Выбор положения",style: TextStyle(color: Colors.black),),
       ),
       body: SingleChildScrollView(  // Оборачиваем в SingleChildScrollView
-        padding: const EdgeInsets.all(10.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            SizedBox(height: 28),
             // Поле "Этаж"
             TextField(
+
               controller: floorController,
               style: TextStyle(color: Colors.black),
               decoration: InputDecoration(
-                labelText: "Этаж:",
+                labelText: "Этаж",
                 labelStyle: TextStyle(color: Colors.black, fontSize: 20),
                 fillColor: Colors.white,
                 filled: true,
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16.0),
+                  borderRadius: BorderRadius.circular (16.0),
                   borderSide: BorderSide.none,
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16.0),
-                  borderSide: BorderSide(color: Colors.black),
+                  borderSide: BorderSide(color: Colors.blue),
                 ),
               ),
             ),
-            SizedBox(height: 40),
+            SizedBox(height: 25),
             // Поле "Помещение"
             TextField(
               controller: roomController,
@@ -104,16 +68,16 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16.0),
-                  borderSide: BorderSide(color: Colors.black),
+                  borderSide: BorderSide(color: Colors.blue),
                 ),
               ),
             ),
-            SizedBox(height: 40),
+            SizedBox(height: 25),
             // Выпадающий список/////////////////////////
             DropdownButtonFormField<String>(
+              isDense:false,
               value: selectedItem,
-              items: 
-              [
+              items: [
                 DropdownMenuItem(child: Text("Стол",style: TextStyle(fontSize: 20),), value: "Стол"),
                 DropdownMenuItem(child: Text("Шкаф",style: TextStyle(fontSize: 20),), value: "Шкаф"),
                 DropdownMenuItem(child: Text("Помещение",style: TextStyle(fontSize: 20),), value: "Помещение"),
@@ -133,35 +97,50 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16.0),
-                  //borderSide: BorderSide(color: Colors.black),
+                  borderSide: BorderSide(color: Colors.blue),
                 ),
               ),
             ),
 
-            SizedBox(height: 450),  // Оставляем пространство перед кнопкой
-            // Кнопка "Добавить"
+            SizedBox(height: 250,),
             Center(
               child: ElevatedButton(
                 onPressed: () {
-                  // Действие при нажатии на кнопку
+                  if (floorController.text.isEmpty || roomController.text.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Заполните все поля',style: TextStyle(fontSize: 23),)),
+                  );
+                  return;
+                  }
+                  final selectedLocation=Location(
+                    id: DateTime.now().millisecondsSinceEpoch,
+                    floor: floorController.text,
+                    room: roomController.text,
+                    type: selectedItem,
+                  );
+                  print(selectedLocation.toJson());
+
+                  Navigator.pop(context,selectedLocation);
                 },
                 style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 60.0),  // Высокая кнопка
+                  padding: EdgeInsets.symmetric(vertical: 25.0, horizontal: 70.0),  // Высокая кнопка
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(46.0), // Скругление углов кнопки
+                    borderRadius: BorderRadius.circular(30.0), // Скругление углов кнопки
                   ),
                   backgroundColor: Colors.white,  // Белый цвет фона кнопки
-                  textStyle: TextStyle(color: Colors.black), // Чёрный цвет текста// Без тени
+                  textStyle: TextStyle(color: Colors.black), // Чёрный цвет текста
+                  elevation: 0, // Без тени
                 ),
                 child: Text(
                   "Выбрать",  // Текст кнопки
-                  style: TextStyle(color: Colors.black, fontSize: 24),  // Чёрный текст
+                  style: TextStyle(color: Colors.black, fontSize: 25),  // Чёрный текст
                 ),
               ),
             )
           ],
         ),
       ),
-  );
-}
+
+    );
+  }
 }

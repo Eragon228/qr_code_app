@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-class NewItemScreen extends StatelessWidget {
-  final TextEditingController nameController = TextEditingController();
-  final TextEditingController articleController = TextEditingController();
-  final TextEditingController descriptionController = TextEditingController();
+import 'view.dart';
+import 'choose.dart';
+class NewItemScreen extends StatefulWidget {
+  @override
+  _NewItemScreenState createState() => _NewItemScreenState();
+}
 
+class _NewItemScreenState extends State<NewItemScreen> {
+  final TextEditingController nameController = TextEditingController();
+  final TextEditingController descriptionController = TextEditingController();
+  Location? selectedLocation; // Переменная для хранения выбранного положения
 
   @override
   Widget build(BuildContext context) {
@@ -26,11 +32,12 @@ class NewItemScreen extends StatelessWidget {
           children: [
             SizedBox(height: 25),
             TextField(
+              maxLines: 2,
               controller: nameController,
               decoration: InputDecoration(
                 alignLabelWithHint: true,
                 labelText: "Название",
-                labelStyle: TextStyle( color:Colors.black, fontSize: 20,),
+                labelStyle: TextStyle(color: Colors.black, fontSize: 22),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16.0),
                   borderSide: BorderSide.none,
@@ -41,35 +48,16 @@ class NewItemScreen extends StatelessWidget {
                 ),
                 fillColor: Colors.white,
                 filled: true,
-              ),
-            ),
-            SizedBox(height: 25),
-            TextField(
-              controller: articleController,
-              decoration: InputDecoration(
-                alignLabelWithHint: true,
-                labelText: "Артикул",
-                labelStyle: TextStyle( color:Colors.black, fontSize: 20,),
-                fillColor: Colors.white,
-                filled: true,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16.0),
-                  borderSide: BorderSide.none,
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16.0),
-                  borderSide: BorderSide(color: Colors.blue),
-                ),
               ),
             ),
             SizedBox(height: 25),
             TextField(
               controller: descriptionController,
-              maxLines: 4,
+              maxLines: 2,
               decoration: InputDecoration(
                 alignLabelWithHint: true,
                 labelText: "Описание",
-                labelStyle: TextStyle( color:Colors.black, fontSize: 20,),
+                labelStyle: TextStyle(color: Colors.black, fontSize: 22),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16.0),
                   borderSide: BorderSide.none,
@@ -82,10 +70,67 @@ class NewItemScreen extends StatelessWidget {
                 filled: true,
               ),
             ),
+            SizedBox(height: 25),
+            // Кнопка "Выбрать положение"
+            Center(
+              child: ElevatedButton(
+                onPressed: () async {
+                  // Открываем экран выбора положения и ждем результат
+                  final selectedLocation = await Navigator.push<Location>(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ChooseLocationScreen(),
+                    ),
+                  );
+
+                  // Если пользователь выбрал положение, сохраняем его
+                  if (selectedLocation != null) {
+                    setState(() {
+                      this.selectedLocation = selectedLocation;
+                    });
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 80.0),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(16.0),
+                  ),
+                  backgroundColor: Colors.lightBlue[100],
+                  textStyle: TextStyle(color: Colors.black),
+                  elevation: 0,
+                ),
+                child: Text(
+                  "Выбрать положение",
+                  style: TextStyle(color: Colors.black, fontSize: 22),
+                ),
+              ),
+            ),
+            SizedBox(height: 30),
             Spacer(),
             ElevatedButton(
               onPressed: () {
-                // Действие добавления
+                if (nameController.text.isEmpty || descriptionController.text.isEmpty) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Заполните все поля', style: TextStyle(fontSize: 24))),
+                  );
+                  return;
+                }
+
+                if (selectedLocation == null) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text('Выберите положение', style: TextStyle(fontSize: 24))),
+                  );
+                  return;
+                }
+
+                final newItem = Item(
+                  id: DateTime.now().millisecondsSinceEpoch,
+                  name: nameController.text,
+                  description: descriptionController.text,
+                  location: selectedLocation!,
+                );
+
+                print(newItem.toJson());
               },
               style: ElevatedButton.styleFrom(
                 padding: EdgeInsets.symmetric(vertical: 25, horizontal: 70),
@@ -95,9 +140,9 @@ class NewItemScreen extends StatelessWidget {
                 backgroundColor: Colors.white,
                 elevation: 0,
               ),
-              child: Text("Добавить", style: TextStyle(color: Colors.black, fontSize: 20)),
+              child: Text("Добавить", style: TextStyle(color: Colors.black, fontSize: 25)),
             ),
-            SizedBox(height: 40,)
+            SizedBox(height: 30),
           ],
         ),
       ),

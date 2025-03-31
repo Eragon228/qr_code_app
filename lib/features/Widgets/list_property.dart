@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-
+import '/features/view/view.dart';
 class InventoryScreen extends StatefulWidget {
   @override
   _InventoryScreenState createState() => _InventoryScreenState();
@@ -55,7 +55,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                   icon: Icon(Icons.filter_list),
                   iconSize: 35,
                   onPressed: () {
-                    // Здесь можно добавить расширенный фильтр
+
                   },
                 ),
                 SizedBox(width: 0,)
@@ -110,10 +110,8 @@ class _InventoryScreenState extends State<InventoryScreen> {
               },
               separatorBuilder: (context,index){
                 return Divider(
-                  color: Colors.grey,
-                  thickness: 1,
-
-
+                  color: Colors.lightBlueAccent[100],
+                  thickness: 0.4,
                 );
               },
             ),

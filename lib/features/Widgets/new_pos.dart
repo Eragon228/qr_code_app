@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-
+import '/features/view/view.dart';
 class NewLocationScreen extends StatefulWidget {
   @override
   _NewLocationScreenState createState() => _NewLocationScreenState();
@@ -42,7 +42,7 @@ class _NewLocationScreenState extends State<NewLocationScreen> {
                 fillColor: Colors.white,
                 filled: true,
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(16.0),
+                  borderRadius: BorderRadius.circular (16.0),
                   borderSide: BorderSide.none,
                 ),
                 focusedBorder: OutlineInputBorder(
@@ -58,7 +58,7 @@ class _NewLocationScreenState extends State<NewLocationScreen> {
               style: TextStyle(color: Colors.black),
               decoration: InputDecoration(
                 labelText: "Помещение",
-                labelStyle: TextStyle(color: Colors.black, fontSize: 20),
+                labelStyle: TextStyle(color: Colors.black, fontSize: 22),
                 fillColor: Colors.white,
                 filled: true,
                 border: OutlineInputBorder(
@@ -74,11 +74,13 @@ class _NewLocationScreenState extends State<NewLocationScreen> {
             SizedBox(height: 25),
             // Выпадающий список/////////////////////////
             DropdownButtonFormField<String>(
+              isDense: false,
               value: selectedItem,
               items: [
-                DropdownMenuItem(child: Text("Стол",style: TextStyle(fontSize: 20),), value: "Стол"),
-                DropdownMenuItem(child: Text("Шкаф",style: TextStyle(fontSize: 20),), value: "Шкаф"),
-                DropdownMenuItem(child: Text("Помещение",style: TextStyle(fontSize: 20),), value: "Помещение"),
+                DropdownMenuItem(child: Text("Стол",style: TextStyle(fontSize: 22),), value: "Стол"),
+                DropdownMenuItem(child: Text("Шкаф",style: TextStyle(fontSize: 22),), value: "Шкаф"),
+                DropdownMenuItem(child: Text("Помещение",style: TextStyle(fontSize: 22),), value: "Помещение"),
+
               ],
               onChanged: (value) {
                 setState(() {
@@ -86,7 +88,7 @@ class _NewLocationScreenState extends State<NewLocationScreen> {
                 });
               },
               decoration: InputDecoration(
-                labelStyle: TextStyle(color: Colors.black, fontSize: 20),
+                labelStyle: TextStyle(color: Colors.black, fontSize: 22),
                 fillColor: Colors.white,
                 filled: true,
                 border: OutlineInputBorder(
@@ -103,11 +105,11 @@ class _NewLocationScreenState extends State<NewLocationScreen> {
             // Поле "Описание"
             TextField(
               controller: descriptionController,
-              maxLines: 5,
+              maxLines: 3,
               style: TextStyle(color: Colors.black),
               decoration: InputDecoration(
                 labelText: "Описание",
-                labelStyle: TextStyle(color: Colors.black, fontSize: 20),
+                labelStyle: TextStyle(color: Colors.black, fontSize: 22),
                 fillColor: Colors.white,
                 filled: true,
                 border: OutlineInputBorder(
@@ -126,10 +128,25 @@ class _NewLocationScreenState extends State<NewLocationScreen> {
             Center(
               child: ElevatedButton(
                 onPressed: () {
+                  if (floorController.text.isEmpty || roomController.text.isEmpty) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Заполните все поля', style: TextStyle(fontSize: 24))),
+                    );
+                    return;
+                  }
+                  final NewLocation=Location(
+                      id: DateTime.now().millisecondsSinceEpoch,
+                      floor: floorController.text,
+                      room: roomController.text,
+                      type: selectedItem,
+                      description: descriptionController.text,
+                  );
+                  print(NewLocation.toJson());
+                  Navigator.pop(context,NewLocation);
                   // Действие при нажатии на кнопку
                 },
                 style: ElevatedButton.styleFrom(
-                  padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 60.0),  // Высокая кнопка
+                  padding: EdgeInsets.symmetric(vertical: 25.0, horizontal: 70.0),  // Высокая кнопка
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30.0), // Скругление углов кнопки
                   ),
