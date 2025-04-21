@@ -110,8 +110,8 @@ class _InventoryScreenState extends State<InventoryScreen> {
               },
               separatorBuilder: (context,index){
                 return Divider(
-                  color: Colors.grey,
-                  thickness: 1,
+                  color: Colors.lightBlueAccent[100],
+                  thickness: 0.4,
 
 
                 );
