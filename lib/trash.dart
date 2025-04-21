@@ -1,7 +1,8 @@
+import 'package:flutter/material.dart';
 
-
-
-
+void main() {
+  print("df");
+}
 // StatefulWidget для основного экрана, так как он будет хранить состояние фильтра и списка товаров.
 // class InventoryScreen extends StatefulWidget {
 //   const InventoryScreen({super.key});
